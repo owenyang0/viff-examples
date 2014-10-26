@@ -2,7 +2,7 @@ angular.module('viffReport', [])
   .controller('reportCtrl', ['dataService', '$scope', function (dataService, $scope, $http) {
     function init(results, diffCount, caseCount, totalAnalysisTime, browsers) {
       $scope.totalAnalysisTime = totalAnalysisTime;
-      
+
       $scope.caseCount = caseCount;
       $scope.sameCount = caseCount - diffCount;
       $scope.cases = results;
@@ -13,35 +13,36 @@ angular.module('viffReport', [])
         url: '',
       };
 
-      function resetCurrentCases(){
-        $scope.currentBrowserCases = filter($scope.cases, function(viffCase){ 
-          return viffCase.browser == $scope.search.browser && viffCase.url.indexOf($scope.search.url) >=0
+      function resetCurrentCases() {
+        $scope.currentBrowserCases = filter($scope.cases, function (viffCase) {
+          return viffCase.browser == $scope.search.browser && viffCase.url.indexOf($scope.search.url) >= 0
         });
         $scope.currentCases = $scope.currentBrowserCases;
         $scope.currentViff = $scope.currentBrowserCases[0];
-        $scope.currentViffId = $scope.currentViff.id;  
-      }
+        $scope.currentViffId = $scope.currentViff.id;
+      };
 
-      $scope.diffCount = function(){
+      $scope.diffCount = function () {
         var count = 0;
         angular.forEach($scope.cases, function (item) {
-          if(item.misMatchPercentage != 0) {
+          if (item.misMatchPercentage != 0) {
             count = count + 1;
           }
         });
         return count;
-      }
-      $scope.$watch('showAll', function(newVal, oldVal){
+      };
+
+      $scope.$watch('showAll', function (newVal, oldVal) {
         // newVal false means show only diff;
         // newVal true means show all
-        if(newVal == false){
-          $scope.currentBrowserCases = filter($scope.cases, function(viffCase){
+        if (newVal == false) {
+          $scope.currentBrowserCases = filter($scope.cases, function (viffCase) {
             return viffCase.isSameDimensions == newVal
-          });  
+          });
           $scope.currentCases = $scope.currentBrowserCases;
           $scope.currentViff = $scope.currentBrowserCases[0];
-          $scope.currentViffId = $scope.currentViff.id;  
-        }else {
+          $scope.currentViffId = $scope.currentViff.id;
+        } else {
           resetCurrentCases();
         }
       });
@@ -50,13 +51,12 @@ angular.module('viffReport', [])
         $scope.currentViff = filter($scope.currentCases, function (viffCase) {
           return viffCase.id == newVal;
         })[0];
-        angular.forEach($(".envImages img, .diffImage img"), function(img){
+        angular.forEach($(".envImages img, .diffImage img"), function (img) {
           img.src = "img/loader.gif";
         })
-        setTimeout(function(){          
+        setTimeout(function () {
           $(".envImages img, .diffImage img").unveil();
         }, 5)
-        
       });
 
       $scope.$watch('search.browser', function (newVal, oldVal) {
@@ -64,30 +64,28 @@ angular.module('viffReport', [])
       });
 
       $scope.$watch('search.url', function (newVal, oldVal) {
-        $scope.currentCases = filter($scope.currentBrowserCases, function(viffCase) {
+        $scope.currentCases = filter($scope.currentBrowserCases, function (viffCase) {
           return viffCase.url.indexOf(newVal) >= 0;
-        });  
+        });
         $scope.currentViff = $scope.currentCases[0];
         $scope.currentViffId = $scope.currentViff.id;
       });
 
-      $scope.approveDiff = function(){
+      $scope.approveDiff = function () {
         $scope.currentViff.misMatchPercentage = 0;
-      }      
+      }
 
       $scope.$apply();
     };
 
-
-    key('/', function(){
+    key('/', function () {
       $scope.$apply(function () {
         $("#search_input").focus();
       });
       return false;
     });
 
-    
-    key('A, ctrl+A', function(){
+    key('A, ctrl+A', function () {
       $scope.$apply(function () {
         $scope.approveDiff();
       });
@@ -96,9 +94,9 @@ angular.module('viffReport', [])
 
     key('j', function () {
       $scope.$apply(function () {
-        
+
         var idx = $scope.currentCases.indexOf($scope.currentViff);
-        if(idx != $scope.currentCases.length - 1) {
+        if (idx != $scope.currentCases.length - 1) {
           $scope.currentViff = $scope.currentCases[idx + 1];
           $scope.currentViffId = $scope.currentViff.id;
         }
@@ -109,7 +107,7 @@ angular.module('viffReport', [])
     key('k', function () {
       $scope.$apply(function () {
         var idx = $scope.currentCases.indexOf($scope.currentViff);
-        if(idx != 0) {
+        if (idx != 0) {
           $scope.currentViff = $scope.currentCases[idx - 1];
           $scope.currentViffId = $scope.currentViff.id;
         }
@@ -120,7 +118,7 @@ angular.module('viffReport', [])
     key('h', function () {
       $scope.$apply(function () {
         var idx = $scope.browsers.indexOf($scope.search.browser);
-        if(idx != 0) {
+        if (idx != 0) {
           $scope.search.browser = $scope.browsers[idx - 1];
         }
         return false;
@@ -130,7 +128,7 @@ angular.module('viffReport', [])
     key('l', function () {
       $scope.$apply(function () {
         var idx = $scope.browsers.indexOf($scope.search.browser);
-        if(idx != $scope.browsers.length - 1) {
+        if (idx != $scope.browsers.length - 1) {
           $scope.search.browser = $scope.browsers[idx + 1];
         }
         return false;
@@ -143,12 +141,14 @@ angular.module('viffReport', [])
         return false;
       });
     });
+
     key('c', function () {
       $scope.$apply(function () {
         $scope.search.browser = "chrome"
         return false;
       });
     });
+
     key('i', function () {
       $scope.$apply(function () {
         $scope.search.browser = "ie"
@@ -173,7 +173,7 @@ angular.module('viffReport', [])
     function filter(arr, condition) {
       var results = [];
       angular.forEach(arr, function (item) {
-        if(condition(item)) {
+        if (condition(item)) {
           results.push(item);
         }
       });
